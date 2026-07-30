@@ -7,7 +7,7 @@ load_dotenv()
 
 def get_llm():
     """Return the default LLM"""
-    model_name = os.getenv("LLM_MODEL", "qwen2.5-coder:7b")
+    model_name = os.getenv("LLM_MODEL", "qwen2.5:7b")
     base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
     return ChatOllama(

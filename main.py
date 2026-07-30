@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from agent import ask
+from agent import ask_llm
 
 # FastAPI application
 app = FastAPI(
@@ -41,6 +41,6 @@ def root():
 
 @app.post("/ask", response_model=AnswerResponse)
 def ask(req: QuestionRequest):
-    answer = ask(req.question)
+    answer = ask_llm(req.question)
     return AnswerResponse(question=req.question, answer=answer) 
     

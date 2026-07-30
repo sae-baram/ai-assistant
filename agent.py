@@ -20,7 +20,7 @@ llm_with_tools = llm.bind_tools(tools)
 
 
 
-def ask(question):
+def ask_llm(question):
 
     response = llm_with_tools.invoke(
         question
