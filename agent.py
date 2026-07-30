@@ -6,6 +6,7 @@ from langchain_ollama import ChatOllama
 from langchain_core.prompts import PromptTemplate
 from llm import get_llm
 from tools import query_database
+from config import language_instruction
 
 
 llm = get_llm()
@@ -22,15 +23,18 @@ llm_with_tools = llm.bind_tools(tools)
 
 def ask_llm(question):
 
+    # Prepend the language instruction to every prompt
+    prefix = language_instruction()
+
     response = llm_with_tools.invoke(
-        question
+        f"{prefix}\n\n{question}"
     )
 
 
     # AI toolt akar használni
 
     if response.tool_calls:
-
+        
         tool_call = response.tool_calls[0]
 
 
@@ -41,19 +45,9 @@ def ask_llm(question):
             )
 
 
-            final = llm.invoke(
-                [
-                    {
-                        "role":"user",
-                        "content":question
-                    },
-                    {
-                        "role":"tool",
-                        "content":result
-                    }
-                ]
-            )
-
+            # Pass the question and the tool result as a single string prompt
+            prompt = f"{prefix}\n\nQuestion: {question}\n\nTool result:\n{result}"
+            final = llm.invoke(prompt)
 
             return final.content
 
