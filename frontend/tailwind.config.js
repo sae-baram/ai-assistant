@@ -1,15 +1,30 @@
+import typography from '@tailwindcss/typography';
+import containerQueries from '@tailwindcss/container-queries';
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
-  theme: {
-    extend: {
-      colors: {
-        neutral: {
-          400: '#94a3b8',
-          700: '#1f2937'
-        }
-      }
-    }
-  },
-  plugins: []
-}
+export default {
+	darkMode: 'class',
+	content: ['./src/**/*.{html,js,svelte,ts}'],
+	theme: {
+		extend: {
+			typography: {
+				DEFAULT: {
+					css: {
+						pre: false,
+						code: false,
+						'pre code': false,
+						'code::before': false,
+						'code::after': false
+					}
+				}
+			},
+			padding: {
+				'safe-bottom': 'env(safe-area-inset-bottom)'
+			},
+			transitionProperty: {
+				width: 'width'
+			}
+		}
+	},
+	plugins: [typography, containerQueries]
+};

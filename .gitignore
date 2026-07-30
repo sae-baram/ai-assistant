@@ -9,6 +9,11 @@ venv/
 ENV/
 .venv
 
+frontend/
+
+# Frontend dependencies
+frontend/node_modules
+
 # Környezeti változók 
 .env
 .env.local

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from agent import ask_question
+from agent import ask
 
 # FastAPI application
 app = FastAPI(
@@ -8,6 +9,19 @@ app = FastAPI(
     description="AI Assistant for handle company requests",
     version="1.0.0"
 
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 #Question format
@@ -27,6 +41,6 @@ def root():
 
 @app.post("/ask", response_model=AnswerResponse)
 def ask(req: QuestionRequest):
-    answer = ask_question(req.question)
+    answer = ask(req.question)
     return AnswerResponse(question=req.question, answer=answer) 
     

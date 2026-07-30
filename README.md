@@ -11,6 +11,44 @@ Ez a projekt egy egyszerű, magyar nyelvű AI asszisztens demo, amely FastAPI-al
 - `requirements.txt` — A projekt Python függőségei.
 - `_main.py`, `demo_module.py` — egyszerű demonstrációs modul és belépési példa.
 
+## Architektúra
+
+                    Frontend
+                        │
+                        ▼
+                    FastAPI
+                        │
+                        ▼
+                Ollama (LLM)
+                        │
+                Tool Calling
+                        │
+        ┌───────────────┴──────────────┐
+        │                              │
+        ▼                              ▼
+  Nincs tool                    query_database()
+        │                              │
+        ▼                              ▼
+  Kész válasz                  Text-to-SQL
+                                       │
+                         ┌─────────────┴─────────────┐
+                         │                           │
+                         ▼                           ▼
+                  LangChain SQL Agent          vagy Vanna.ai
+                         │                           │
+                         └─────────────┬─────────────┘
+                                       ▼
+                                  SQL Database
+                                       │
+                                       ▼
+                                  Eredmény
+                                       │
+                                       ▼
+                              Ollama megfogalmazza
+                                       │
+                                       ▼
+                                   Frontend
+
 ## Használt technológiák
 
 - Python 3.11+ ajánlott
@@ -152,12 +190,65 @@ curl -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json" -d '{
 - Ha SQL kérdésre nem ad megfelelő választ, futtasd a `setup_db.py`-t újra és győződj meg róla, hogy a `company.db` fájl létezik.
 - A projektetlen `requirements.txt` sok csomagot tartalmaz; ha szükséges, csak a ténylegesen használt csomagokat tartsd meg.
 
+## Frontend telepítés
+
+1. Nyisd meg a `frontend` mappát:
+
+```powershell
+cd frontend
+```
+
+2. Telepítsd a frontend függőségeket:
+
+```powershell
+npm install
+```
+
+3. Indítsd el a React fejlesztői szervert:
+
+```powershell
+npm run dev -- --host 0.0.0.0 --port 5173
+```
+
+4. Nyisd meg a böngészőt a `http://localhost:5173` címen.
+
+Ha a backend más porton fut, módosítsd a `frontend/.env` fájlban a `VITE_API_URL` változót.
+
 ## Kiterjesztési lehetőségek
 
 - Több adatbázis-tábla és komplexebb lekérdezések támogatása
 - Jogosultságkezelés és felhasználói autentikáció hozzáadása
 - További végpontok: `POST /questions`, `GET /history`, `GET /employees`
 - Frontend alkalmazás készítése az AI asszisztenshez
+
+## Open-WebUI integráció (ajánlott: cserélje le az alap frontendet)
+
+Ez a projekt támogatja, hogy az alap React demo helyett az Open-WebUI frontendet használd. Mivel a környezet nem tud közvetlenül klónozni vagy futtatni hálózati parancsokat, az alábbi lépéseket lokálisan kell végrehajtani.
+
+1. Klónozd az `open-webui`-t a `frontend` mappába és telepítsd:
+
+```bash
+./scripts/install_open_webui.sh
+```
+
+2. A script létrehoz egy `.env.local` fájlt a `frontend` mappában, amelyben a `VITE_API_BASE_URL` a backendünkre (`http://localhost:8000`) mutat. Ha az open-webui egy másik útvonalat vár, állítsd be `http://localhost:8000/ask`-re.
+
+3. Indítsd el a backendet:
+
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+4. Indítsd el az open-webui fejlesztői szerverét (a `frontend` mappában):
+
+```bash
+cd frontend
+npm run dev
+```
+
+5. Nyisd meg a UI-t (általában `http://localhost:3000`) és tesztelj kérdéseket; a frontendnek a `VITE_API_BASE_URL` konfiguráció alapján a backendünkhöz kell fordulnia.
+
+Hiba esetén másold ide a terminál kimenetét és segítek hibát keresni és javítani.
 
 ## Licence
 
